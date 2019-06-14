@@ -1,16 +1,65 @@
+body {
+  font-size: 1rem;
+  text-align: center;
+  line-height: 1.4;
+  background: white;
+}
+
+.container {
+  background: white;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 2em;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button {
+  border-radius: 5px;
+}
+
 button:focus {
   outline: none;
 }
 
 #title {
   text-align: center;
+  position: relative;
+  display: inline-block;
+}
+
+#title::before,
+#title::after {
+  content: "";
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+}
+
+#title::before {
+  background: red;
+  width: 100vw;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: -2;
+}
+#title::after {
+  height: 101%;
+  background: white;
+  left: -0.1em;
+  right: -0.1em;
+  z-index: -1;
 }
 
 #buttons {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(75px, 1fr));
   grid-gap: 1em;
-  justify-content: space-evenly;
 }
 
 #buttons > .search-button {
@@ -44,6 +93,8 @@ button:focus {
 
 form#addSport {
   padding: 1em 0;
+  display: flex;
+  justify-content: flex-start;
 }
 
 #saveDiv {

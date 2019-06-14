@@ -5,7 +5,7 @@ let viewSaved = false;
 document.addEventListener("DOMContentLoaded", renderBtns);
 document.querySelector("#addSport").addEventListener("submit", function(e) {
   e.preventDefault();
-  console.log(e);
+  // console.log(e);
   input = e.target.elements.input;
   if (input.value === null || input.value === "") {
     alert("Please enter a search term.");
@@ -68,6 +68,7 @@ function viewSaves() {
 function getGifs() {
   if (viewSaved) {
     clearOutByID("targetDiv");
+    viewSaved = false;
   }
   const queryURLBtn = `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${
     this.dataset.name
@@ -76,7 +77,7 @@ function getGifs() {
     .then(data => data.json())
     .then(data => {
       if (data.data !== undefined) {
-        console.log(data.data);
+        // console.log(data.data);
         results = data.data;
         results.forEach(item => renderGifs(item));
         // if undefined response, throw error
