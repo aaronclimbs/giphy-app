@@ -1,0 +1,56 @@
+#title {
+  text-align: center;
+}
+
+#buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(75px, 1fr));
+  grid-gap: 1em;
+  justify-content: space-evenly;
+}
+
+#buttons > button {
+  padding: 1em;
+}
+
+.imgContainer {
+  position: relative;
+}
+
+.iconFA {
+  position: absolute;
+  bottom: 21px;
+  left: 30px;
+}
+
+form#addSport {
+  padding: 1em 0;
+  display: ;
+}
+
+form#addSport input {
+  padding: 1em;
+}
+
+form#addSport button[type="submit"] {
+  padding: 1em;
+  margin-left: 1em;
+}
+
+#targetDiv {
+  margin: 1em 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-gap: 1em;
+  justify-content: center;
+}
+#targetDiv > div {
+  display: grid;
+  justify-content: center;
+}
+
+.container {
+  width: 80%;
+  margin: 0 auto;
+  overflow-x: hidden;
+}

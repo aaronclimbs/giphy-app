@@ -1,11 +1,23 @@
 const API_KEY = "29kNYcuu8j6tch4gMNKSN5VQQufCvlGp";
-const topics = ["basketball", "soccer", "tennis", "climbing"];
+const topics = [
+  "basketball",
+  "football",
+  "tennis",
+  "rock climbing",
+  "baseball"
+];
 
 document.addEventListener("DOMContentLoaded", renderBtns);
-document.addEventListener("submit", function(e) {
+document.querySelector("#addSport").addEventListener("submit", function(e) {
   e.preventDefault();
-  val = e.target.value;
-  topics.push(val);
+  console.log(e);
+  input = e.target.elements.input.toLowerCase();
+  if (topics.indexOf(input.value) === -1) {
+    topics.push(input.value);
+  } else {
+    alert("This button's already here.");
+  }
+  input.value = "";
   renderBtns();
 });
 
@@ -23,14 +35,11 @@ function renderBtns() {
     document.querySelector("#buttons").append(el);
   });
 }
-// send the right headers
-// correct content-type
-// legal 'access-control-allow-origin' on the response
 
 function getGifs() {
   const queryURL = `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${
     this.dataset.name
-  }&limit=5&offset=0&lang=en`;
+  }&limit=8&offset=${Math.floor(Math.random() * 50)}&lang=en`;
   fetch(queryURL, { mode: "cors" })
     .then(data => data.json())
     .then(data => {
@@ -39,26 +48,43 @@ function getGifs() {
         results = data.data;
         results.forEach(item => {
           // create elements
-          const elTitle = document.createElement("h4");
           const elImg = document.createElement("img");
           const elRating = document.createElement("p");
           const newDiv = document.createElement("div");
+          const dLoad = document.createElement("span");
 
           // grab data from response
-          const title = item.title.replace(/ GIF.*/g, "");
-          const imgSrc = item.embed_url;
+          const animated = item.images.fixed_width.url;
+          const still = item.images.fixed_width_still.url;
           const rating = item.rating;
 
           // append text and place in div
-          elTitle.appendChild(document.createTextNode(title));
+          dLoad.className = "iconFA";
+          dLoad.innerHTML = `<a href=${
+            item.images.downsized_medium.url
+          } download=${replaceSpaces(
+            item.title
+          )} target="_blank"><i class='fas fa-external-link-square-alt'/></a>`;
           elRating.appendChild(document.createTextNode(rating));
-          elImg.src = imgSrc;
+          elRating.style.textAlign = "center";
+          elImg.src = still;
+          elImg.setAttribute("data-state", "still");
+          elImg.addEventListener("click", e => {
+            let gif = e.target;
+            if (gif.getAttribute("data-state") === "still") {
+              gif.src = animated;
+              gif.setAttribute("data-state", "animate");
+            } else {
+              gif.src = still;
+              gif.setAttribute("data-state", "still");
+            }
+          });
+          newDiv.className = "imgContainer";
           newDiv.append(elImg);
-          newDiv.append(elTitle);
           newDiv.append(elRating);
-
+          newDiv.append(dLoad);
           // append to document
-          document.querySelector("#targetDiv").append(newDiv);
+          document.querySelector("#targetDiv").prepend(newDiv);
         });
         // if undefined response, throw error
       } else {
@@ -69,40 +95,14 @@ function getGifs() {
     .catch(err => console.error(err));
 }
 
-function getGifsTenor() {
-  $("button").on("click", function() {
-    var queryURL =
-      "https://api.tenor.com/v1/search?=" +
-      this.dataset.name +
-      "&key=LIVDSRZULELA&limit=10";
+function changeState() {
+  if (this.hasAttribute("data-state", "still")) {
+    this.url = animated;
+  } else {
+    this.url = still;
+  }
+}
 
-    $.ajax({
-      url: queryURL,
-      method: "GET"
-    }).then(function(response) {
-      let results = response.results;
-      console.log(results);
-
-      results.forEach(item => {
-        // create elements
-        const elTitle = document.createElement("h4");
-        elTitle.appendChild(
-          document.createTextNode(item.title.replace(/ GIF.*/g, ""))
-        );
-        const elImg = document.createElement("img");
-        elImg.src = item.url;
-        const elRating = document.createElement("p");
-        elRating.appendChild(document.createTextNode(item.rating));
-        const newDiv = document.createElement("div");
-
-        // append text and place in div
-        newDiv.append(elImg);
-        newDiv.append(elTitle);
-        newDiv.append(elRating);
-
-        // append to document
-        document.querySelector("#targetDiv").prepend(newDiv);
-      });
-    });
-  });
+function replaceSpaces(string) {
+  return string.replace(/ GIF/, "").replace(/[\s]/g, "_");
 }

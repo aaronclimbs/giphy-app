@@ -5,13 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Giphy App</title>
+    <script src="https://kit.fontawesome.com/5f0310cd35.js"></script>
     <link rel="stylesheet" href="./assets/css/style.css" />
   </head>
   <body>
-    <h1>Giphy Search App</h1>
-    <div id="buttons"></div>
-    <div id="targetDiv"></div>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <div class="container">
+      <h1 id="title">Giphy Search App</h1>
+      <div id="buttons"></div>
+      <form id="addSport">
+        <input type="text" name="input" placeholder="add a sport..." />
+        <button type="submit">Add!</button>
+      </form>
+      <div id="targetDiv"></div>
+    </div>
     <script src="./assets/js/index.js"></script>
   </body>
 </html>
