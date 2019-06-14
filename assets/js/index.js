@@ -1,19 +1,19 @@
+// TO DO
+// Add clear local storage functionality
+// Fix save and clear save button padding
+// Turn rendering GIFs into a separate function that can be reused for viewing saved gifs
+
 const API_KEY = "29kNYcuu8j6tch4gMNKSN5VQQufCvlGp";
-const topics = [
-  "basketball",
-  "football",
-  "tennis",
-  "rock climbing",
-  "baseball"
-];
+const topics = ["rock climbing", "baseball", "tennis", "basketball"];
+let viewSaved = false;
 
 document.addEventListener("DOMContentLoaded", renderBtns);
 document.querySelector("#addSport").addEventListener("submit", function(e) {
   e.preventDefault();
   console.log(e);
-  input = e.target.elements.input.toLowerCase();
-  if (topics.indexOf(input.value) === -1) {
-    topics.push(input.value);
+  input = e.target.elements.input;
+  if (topics.indexOf(input.value.toLowerCase()) === -1) {
+    topics.push(input.value.toLowerCase());
   } else {
     alert("This button's already here.");
   }
@@ -21,30 +21,52 @@ document.querySelector("#addSport").addEventListener("submit", function(e) {
   renderBtns();
 });
 
+document.querySelector("#viewSaves").addEventListener("click", viewSaves);
+
 function renderBtns() {
-  while (document.querySelector("#buttons").firstChild) {
-    document
-      .querySelector("#buttons")
-      .removeChild(document.querySelector("#buttons").firstChild);
-  }
+  clearOutByID("buttons");
   topics.forEach(topic => {
     const el = document.createElement("button");
     el.appendChild(document.createTextNode(topic));
+    el.classList = "search-button";
     el.setAttribute("data-name", topic);
     el.addEventListener("click", getGifs);
     document.querySelector("#buttons").append(el);
   });
 }
 
+function viewSaves() {
+  viewSaved = true;
+  clearOutByID("targetDiv");
+  const saved = localStorage.getItem("favGifs").split(",");
+  saved.forEach(id => {
+    const queryURLSaved = `https://api.giphy.com/v1/gifs/${id}?api_key=${API_KEY}`;
+    fetch(queryURLSaved, { mode: "cors" })
+      .then(data => data.json())
+      .then(data => {
+        if (data.data !== undefined) {
+          console.log(data.data);
+        } else {
+          throw new Error("data returned as undefined, check what was entered");
+        }
+      })
+      //catch errors
+      .catch(err => console.error(err));
+  });
+}
+
 function getGifs() {
-  const queryURL = `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${
+  if (viewSaved) {
+    clearOutByID("targetDiv");
+  }
+  const queryURLBtn = `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${
     this.dataset.name
-  }&limit=8&offset=${Math.floor(Math.random() * 50)}&lang=en`;
-  fetch(queryURL, { mode: "cors" })
+  }&limit=10&offset=${Math.floor(Math.random() * 50)}&lang=en`;
+  fetch(queryURLBtn, { mode: "cors" })
     .then(data => data.json())
     .then(data => {
       if (data.data !== undefined) {
-        console.log(data);
+        console.log(data.data);
         results = data.data;
         results.forEach(item => {
           // create elements
@@ -52,23 +74,45 @@ function getGifs() {
           const elRating = document.createElement("p");
           const newDiv = document.createElement("div");
           const dLoad = document.createElement("span");
+          const save = document.createElement("span");
 
           // grab data from response
+          const id = item.id;
           const animated = item.images.fixed_width.url;
           const still = item.images.fixed_width_still.url;
           const rating = item.rating;
 
           // append text and place in div
-          dLoad.className = "iconFA";
+          dLoad.className = "iconDownload";
           dLoad.innerHTML = `<a href=${
             item.images.downsized_medium.url
           } download=${replaceSpaces(
             item.title
           )} target="_blank"><i class='fas fa-external-link-square-alt'/></a>`;
-          elRating.appendChild(document.createTextNode(rating));
+          save.className = "iconSave";
+          save.innerHTML = `<i class="far fa-heart" data-save="unsaved"></i>`;
+          save.addEventListener("click", e => {
+            let btn = e.target;
+            let gifID = btn.parentElement.parentElement.firstChild.dataset.id;
+            if (btn.getAttribute("data-save") == "unsaved") {
+              btn.classList.remove("far");
+              btn.classList.add("fas");
+              btn.setAttribute("data-save", "saved");
+              addToLocal("favGifs", gifID);
+            } else {
+              btn.classList.remove("fas");
+              btn.classList.add("far");
+              btn.setAttribute("data-save", "unsaved");
+              removeFromLocal("favGifs", gifID);
+            }
+          });
+          elRating.appendChild(document.createTextNode(`Rated: ${rating}`));
           elRating.style.textAlign = "center";
+          elRating.className = "animated zoomInLeft";
           elImg.src = still;
+          elImg.setAttribute("data-id", id);
           elImg.setAttribute("data-state", "still");
+          elImg.className = "animated flipInY";
           elImg.addEventListener("click", e => {
             let gif = e.target;
             if (gif.getAttribute("data-state") === "still") {
@@ -83,6 +127,7 @@ function getGifs() {
           newDiv.append(elImg);
           newDiv.append(elRating);
           newDiv.append(dLoad);
+          newDiv.append(save);
           // append to document
           document.querySelector("#targetDiv").prepend(newDiv);
         });
@@ -95,14 +140,31 @@ function getGifs() {
     .catch(err => console.error(err));
 }
 
-function changeState() {
-  if (this.hasAttribute("data-state", "still")) {
-    this.url = animated;
-  } else {
-    this.url = still;
-  }
-}
-
 function replaceSpaces(string) {
   return string.replace(/ GIF/, "").replace(/[\s]/g, "_");
+}
+
+function addToLocal(name, value) {
+  let exists = localStorage.getItem(name);
+
+  exists = exists ? exists.split(",") : [];
+  exists.push(value);
+
+  localStorage.setItem(name, exists.toString());
+}
+
+function removeFromLocal(name, value) {
+  let exists = localStorage.getItem(name);
+
+  exists = exists ? exists.split(",") : [];
+  exists = exists.filter(item => item !== value);
+
+  localStorage.setItem(name, exists.toString());
+}
+
+function clearOutByID(target) {
+  const targetDiv = document.querySelector(`#${target}`);
+  while (targetDiv.firstChild) {
+    targetDiv.removeChild(targetDiv.firstChild);
+  }
 }

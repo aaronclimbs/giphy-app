@@ -1,3 +1,7 @@
+button:focus {
+  outline: none;
+}
+
 #title {
   text-align: center;
 }
@@ -9,7 +13,7 @@
   justify-content: space-evenly;
 }
 
-#buttons > button {
+#buttons > .search-button {
   padding: 1em;
 }
 
@@ -17,15 +21,40 @@
   position: relative;
 }
 
-.iconFA {
+.iconDownload {
   position: absolute;
   bottom: 21px;
   left: 30px;
 }
+.iconSave {
+  position: absolute;
+  bottom: 21px;
+  right: 30px;
+}
+
+#viewSaves {
+  background-color: blue;
+  color: white;
+}
+
+#clearSaves {
+  background-color: red;
+  color: white;
+}
 
 form#addSport {
   padding: 1em 0;
-  display: ;
+}
+
+#saveDiv {
+  display: flex;
+  justify-content: space-around;
+  margin: 1em 0;
+}
+
+.save-btn {
+  padding: 0.75em;
+  width: 40%;
 }
 
 form#addSport input {
