@@ -66,19 +66,15 @@ button:focus {
   padding: 1em;
 }
 
-.imgContainer {
-  position: relative;
-}
-
 .iconDownload {
   position: absolute;
-  bottom: 21px;
-  left: 30px;
+  top: 0px;
+  left: -18%;
 }
 .iconSave {
   position: absolute;
-  bottom: 21px;
-  right: 30px;
+  top: 0px;
+  right: -18%;
 }
 
 #viewSaves {
@@ -133,4 +129,17 @@ form#addSport button[type="submit"] {
   width: 80%;
   margin: 0 auto;
   overflow-x: hidden;
+}
+
+.imgContainer p {
+  position: relative;
+  font-size: 12px;
+  width: 70%;
+  text-align: center;
+  margin: 1em auto;
+}
+
+.fas,
+.far {
+  font-size: initial;
 }

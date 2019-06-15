@@ -120,7 +120,7 @@ function clearOutByID(target) {
 
 function renderGifs(item) {
   const elImg = document.createElement("img");
-  const elRating = document.createElement("p");
+  const elTitle = document.createElement("p");
   const newDiv = document.createElement("div");
   const dLoad = document.createElement("span");
   const save = document.createElement("span");
@@ -130,6 +130,7 @@ function renderGifs(item) {
   const animated = item.images.fixed_width.url;
   const still = item.images.fixed_width_still.url;
   const rating = item.rating;
+  const title = item.title.replace(/ GIF/, "");
 
   // append text and place in div
   dLoad.className = "iconDownload";
@@ -137,16 +138,22 @@ function renderGifs(item) {
     item.images.downsized_medium.url
   } download=${replaceSpaces(
     item.title
-  )} target="_blank"><i class='fas fa-external-link-square-alt'/></a>`;
+  )} target="_blank"><i class='fas fa-external-link-square-alt fa-lg'/></a>`;
   save.className = "iconSave";
-  if (localStorage.getItem("favGifs").includes(id)) {
-    save.innerHTML = `<i class="fas fa-heart" data-save="saved"></i>`;
+  if (localStorage.getItem("favGifs")) {
+    if (localStorage.getItem("favGifs").includes(id)) {
+      save.innerHTML = `<i class="fas fa-heart fa-lg" data-save="saved"></i>`;
+    } else {
+      save.innerHTML = `<i class="far fa-heart fa-lg" data-save="unsaved"></i>`;
+    }
   } else {
-    save.innerHTML = `<i class="far fa-heart" data-save="unsaved"></i>`;
+    localStorage.setItem("favGifs", "");
+    save.innerHTML = `<i class="far fa-heart fa-lg" data-save="unsaved"></i>`;
   }
   save.addEventListener("click", e => {
     let btn = e.target;
-    let gifID = btn.parentElement.parentElement.firstChild.dataset.id;
+    let gifID =
+      btn.parentElement.parentElement.parentElement.firstChild.dataset.id;
     if (btn.getAttribute("data-save") === "unsaved") {
       btn.classList.remove("far");
       btn.classList.add("fas");
@@ -159,9 +166,9 @@ function renderGifs(item) {
       removeFromLocal("favGifs", gifID);
     }
   });
-  elRating.appendChild(document.createTextNode(`Rated: ${rating}`));
-  elRating.style.textAlign = "center";
-  elRating.className = "animated zoomInLeft";
+  elTitle.appendChild(document.createTextNode(title));
+  elTitle.style.textAlign = "center";
+  elTitle.className = "animated zoomInLeft";
   elImg.src = still;
   elImg.setAttribute("data-id", id);
   elImg.setAttribute("data-state", "still");
@@ -176,11 +183,13 @@ function renderGifs(item) {
       gif.setAttribute("data-state", "still");
     }
   });
+  elTitle.append(dLoad);
+  elTitle.append(save);
   newDiv.className = "imgContainer";
   newDiv.append(elImg);
-  newDiv.append(elRating);
-  newDiv.append(dLoad);
-  newDiv.append(save);
+  newDiv.append(elTitle);
+  // newDiv.append(dLoad);
+  // newDiv.append(save);
   // append to document
   document.querySelector("#targetDiv").prepend(newDiv);
 }
