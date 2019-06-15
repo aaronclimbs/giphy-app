@@ -7,10 +7,10 @@ document.querySelector("#addSport").addEventListener("submit", function(e) {
   e.preventDefault();
   // console.log(e);
   input = e.target.elements.input;
-  if (input.value === null || input.value === "") {
+  if (input.value === null || input.value.replace(/\s/g, "").length === 0) {
     alert("Please enter a search term.");
   } else {
-    if (input.value.replace(/\d/g, "").length === 0) {
+    if (/\d/g.test(input.value)) {
       alert("Please enter a word.");
     } else if (topics.indexOf(input.value.toLowerCase()) === -1) {
       topics.push(input.value.toLowerCase());
