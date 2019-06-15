@@ -188,5 +188,7 @@ function renderGifs(item) {
 function clearSaves() {
   localStorage.setItem("favGifs", "");
   alert("Local storage cleared.");
-  document.location.reload();
+  if (viewSaved) {
+    document.location.reload();
+  }
 }
